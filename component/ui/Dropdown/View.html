@@ -1,0 +1,16 @@
+<template class="shadow">
+    <style><%- shadowStyle %></style>
+    <div class="dropdown">
+        <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{display.title}}
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dLabel"></ul>
+    </div>
+</template>
+
+<script>
+    (function(window, document, undefined) {
+        require("websemble").frontend.createComponent('ui-dropdown');
+    })(window, document);
+</script>

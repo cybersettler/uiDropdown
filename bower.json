@@ -1,0 +1,23 @@
+{
+  "name": "uiDropdown",
+  "homepage": "https://github.com/cybersettler/uiDropdown",
+  "authors": [
+    "Javier escobar <cybersettler@babylonone.com>"
+  ],
+  "description": "Dropdown websemble component",
+  "main": "",
+  "keywords": [
+    "websemble",
+    "javascript",
+    "html5",
+    "webcomponents"
+  ],
+  "license": "Apache-2.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
