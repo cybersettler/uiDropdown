@@ -31,6 +31,8 @@ DropdownWidget.prototype.fetchData = function() {
     var promises = [];
     var widget = this;
 
+    promises.push(widget.scope.onAppReady);
+
     if (this.view.hasAttribute('data-model')) {
         promises.push(
             this.scope.getModel().then(function(result) {
