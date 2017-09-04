@@ -44,7 +44,12 @@ defaults to _down_.
 * __title__(string): Dropdown title.
 * __direction__(enum: up | down): Dropdown direction,
 defaults to _up_.
-* __options__(array: [sring] | [object]): Dropdown options.
+* __items__(array: [sring] | [object] | object): Dropdown options.
+The following attributes are supported in the items configuration
+object:
+  * __model__(string): Where the items come from in the model.
+  * __template__(string): A _Handlebars_ template that will be used
+  to render the dropdown items.
 
 ### data-select
 

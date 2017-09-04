@@ -1,5 +1,6 @@
 const Handlebars = require('Handlebars');
 const d3 = require('d3');
+const arrayPattern = /^(\w+)\[(\d+)]$/;
 
 function DropdownWidget(view, scope) {
     this.view = view;
@@ -41,6 +42,14 @@ DropdownWidget.prototype.fetchData = function() {
         );
     }
 
+    if (this.view.hasAttribute('data-display')) {
+        promises.push(
+            this.scope.getDisplay().then(function(result) {
+                widget.display = result;
+            })
+        );
+    }
+
     return Promise.all(promises).then(function() {
         return widget;
     });
@@ -54,6 +63,14 @@ DropdownWidget.prototype.populateDropdown = function() {
 
     var data = this.getOptionsData();
     var options = this.view.shadowRoot.querySelector('ul.dropdown-menu');
+    var model = this.model;
+    var display = this.display;
+    var template = null;
+
+    if (hasDisplayTemplate()) {
+        template = Handlebars.compile(display.items.template);
+    }
+
 
     // Update…
     var li = d3.select(options)
@@ -79,8 +96,20 @@ DropdownWidget.prototype.populateDropdown = function() {
     li.exit().remove();
 
     function renderTemplate(d) {
-        let template = Handlebars.compile(d);
-        return template(params);
+
+        let currentTemplate = template;
+        let currentModel = d;
+        if (!template) {
+            currentTemplate = Handlebars.compile(d);
+            currentModel = model;
+        }
+        return currentTemplate({
+            model: currentModel
+        });
+    }
+
+    function hasDisplayTemplate() {
+        return display.items && !Array.isArray(display.items) && display.items.template;
     }
 };
 
@@ -93,7 +122,9 @@ DropdownWidget.prototype.getTitle = function() {
         let template = Handlebars.compile(title);
         title = template(this);
     } else if(this.display.title) {
-
+        let text = this.display.title;
+        let template = Handlebars.compile(text);
+        title = template(this);
     }
 
     return title;
@@ -102,16 +133,41 @@ DropdownWidget.prototype.getTitle = function() {
 DropdownWidget.prototype.getOptionsData = function() {
 
     var data = [];
+    var items = this.display.items;
+    var model = this.model;
 
     if (this.isFilled()) {
-        data = this.view.querySelector('li').map(function(item){
-            return item.textContent;
-        });
-    } else if(this.display.options) {
-        data = this.display.options;
+        let lis = this.view.querySelectorAll('li');
+        data = Array.from(lis)
+            .map(function(item){
+                return item.textContent;
+            });
+    } else if (items && Array.isArray(items)) {
+        data = items;
+    } else if (model && Array.isArray(model)) {
+        data = model;
+    } else if (typeof model === 'object' &&
+        typeof items === 'object') {
+        data = getItemsModel(items.model, model);
     }
 
     return data;
 };
+
+function getItemsModel(path, model) {
+    return path.split('.').reduce(getProperty, model);
+    function getProperty(acc, property) {
+        let result;
+        if (arrayPattern.test(property)) {
+            let match = arrayPattern.exec(property);
+            property = match[1];
+            let index = match[2];
+            result = acc[property][index];
+        } else {
+            result = acc[property];
+        }
+        return result;
+    }
+}
 
 module.exports = DropdownWidget;

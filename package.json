@@ -1,0 +1,35 @@
+{
+  "name": "ui-dropdown",
+  "version": "1.0.0",
+  "description": "Websemble dropdown widget",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha ./test/component/ui/Dropdown"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cybersettler/uiDropdown.git"
+  },
+  "keywords": [
+    "websemble",
+    "html5",
+    "webcomponent"
+  ],
+  "author": "cybersettler@babylonone.com",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/cybersettler/uiDropdown/issues"
+  },
+  "homepage": "https://github.com/cybersettler/uiDropdown#readme",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "d3": "^4.10.2",
+    "handlebars": "^4.0.10",
+    "i18next": "^9.0.0",
+    "jsdom": "^11.2.0",
+    "mocha": "^3.5.0"
+  }
+}
