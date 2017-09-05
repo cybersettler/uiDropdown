@@ -10,6 +10,9 @@ function DropdownController(view, scope) {
         if (view.hasAttribute('data-model')) {
             bindingAttributes.push('model');
         }
+        if (view.hasAttribute('data-display')) {
+            bindingAttributes.push('display');
+        }
         scope.bindAttributes(bindingAttributes);
 
         controller.dropdownWidget = new DropdownWidget(view, scope);
