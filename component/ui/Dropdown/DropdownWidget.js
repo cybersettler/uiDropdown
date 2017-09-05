@@ -65,6 +65,7 @@ DropdownWidget.prototype.populateDropdown = function() {
     var options = this.view.shadowRoot.querySelector('ul.dropdown-menu');
     var model = this.model;
     var display = this.display;
+    var scope = this.scope;
     var template = null;
 
     if (hasDisplayTemplate()) {
@@ -86,8 +87,8 @@ DropdownWidget.prototype.populateDropdown = function() {
         .append('a')
         .on('click', function(d) {
             d3.event.preventDefault();
-            if (widget.scope.onSelect) {
-                widget.scope.onSelect(d);
+            if (scope.onSelect) {
+                scope.onSelect(d);
             }
         })
         .text(renderTemplate);
