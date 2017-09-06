@@ -207,7 +207,7 @@
 // Reiterate per navbar.less and the modified component alignment there.
 
 @media (min-width: @grid-float-breakpoint) {
-  :host(.navbar-right) {
+  :host(.nav) {
     .dropdown-menu {
       .dropdown-menu-right();
     }
@@ -219,21 +219,43 @@
   }
 }
 
-:host(.navbar-nav) {
+:host(.nav) {
+
+  button.btn-link {
+    padding-top:    10px;
+    padding-bottom: 10px;
+    line-height: @line-height-computed;
+    color: @navbar-default-link-color;
+    border: none;
+
+    &:hover,
+    &:focus {
+      color: @navbar-default-link-hover-color;
+      background-color: @navbar-default-link-hover-bg;
+      border: none;
+      outline: none;
+      text-decoration: none;
+    }
+
+    // Remove background color from open dropdown
+    &[aria-expanded=true] {
+      &,
+      &:hover,
+      &:focus {
+        background-color: @navbar-default-link-active-bg;
+        color: @navbar-default-link-active-color;
+      }
+    }
+
+    @media (min-width: @grid-float-breakpoint) {
+      padding-top:    @navbar-padding-vertical;
+      padding-bottom: @navbar-padding-vertical;
+    }
+  }
 
   .dropdown-menu {
     margin-top: 0;
     .border-top-radius(0);
-  }
-
-  // Remove background color from open dropdown
-  > .open > a {
-    &,
-    &:hover,
-    &:focus {
-      background-color: @navbar-default-link-active-bg;
-      color: @navbar-default-link-active-color;
-    }
   }
 
   @media (max-width: @grid-float-breakpoint-max) {

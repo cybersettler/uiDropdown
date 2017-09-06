@@ -34,7 +34,7 @@ DropdownWidget.prototype.renderButton = function() {
     caret.classList.add('caret');
     this.button.textContent = this.getTitle();
     this.button.appendChild(caret);
-    if (this.view.classList.contains('navbar-nav')) {
+    if (this.view.classList.contains('nav')) {
         this.button.classList.add('btn-link');
     } else {
         this.button.classList.add('btn-default');
