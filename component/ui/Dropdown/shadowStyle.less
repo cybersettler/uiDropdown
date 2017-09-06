@@ -4,6 +4,8 @@
 
 @import "base.less";
 @import 'mixins/nav-divider.less';
+@import 'buttons.less';
+@import 'mixins/buttons.less';
 
 // Dropdown arrow/caret
 .caret {
@@ -205,7 +207,7 @@
 // Reiterate per navbar.less and the modified component alignment there.
 
 @media (min-width: @grid-float-breakpoint) {
-  .navbar-right {
+  :host(.navbar-right) {
     .dropdown-menu {
       .dropdown-menu-right();
     }
@@ -213,6 +215,48 @@
     // Will remove come v4 in all likelihood.
     .dropdown-menu-left {
       .dropdown-menu-left();
+    }
+  }
+}
+
+:host(.navbar-nav) {
+
+  .dropdown-menu {
+    margin-top: 0;
+    .border-top-radius(0);
+  }
+
+  // Remove background color from open dropdown
+  > .open > a {
+    &,
+    &:hover,
+    &:focus {
+      background-color: @navbar-default-link-active-bg;
+      color: @navbar-default-link-active-color;
+    }
+  }
+
+  @media (max-width: @grid-float-breakpoint-max) {
+    // Dropdowns get custom display when collapsed
+    .open .dropdown-menu {
+      position: static;
+      float: none;
+      width: auto;
+      margin-top: 0;
+      background-color: transparent;
+      border: 0;
+      box-shadow: none;
+      > li > a,
+      .dropdown-header {
+        padding: 5px 15px 5px 25px;
+      }
+      > li > a {
+        line-height: @line-height-computed;
+        &:hover,
+        &:focus {
+          background-image: none;
+        }
+      }
     }
   }
 }

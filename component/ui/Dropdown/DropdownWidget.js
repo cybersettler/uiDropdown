@@ -3,6 +3,7 @@ const d3 = require('d3');
 const arrayPattern = /^(\w+)\[(\d+)]$/;
 
 function DropdownWidget(view, scope) {
+
     this.view = view;
     this.scope = scope;
     this.display = {};
@@ -23,12 +24,25 @@ DropdownWidget.prototype.render = function() {
     return this.fetchData()
         .then(
             function(widget) {
-                widget.button.textContent = widget.getTitle();
+                widget.renderButton();
                 widget.populateDropdown();
             });
 };
 
+DropdownWidget.prototype.renderButton = function() {
+    var caret = document.createElement('span');
+    caret.classList.add('caret');
+    this.button.textContent = this.getTitle();
+    this.button.appendChild(caret);
+    if (this.view.classList.contains('navbar-nav')) {
+        this.button.classList.add('btn-link');
+    } else {
+        this.button.classList.add('btn-default');
+    }
+};
+
 DropdownWidget.prototype.fetchData = function() {
+
     var promises = [];
     var widget = this;
 
@@ -156,7 +170,9 @@ DropdownWidget.prototype.getOptionsData = function() {
 };
 
 function getItemsModel(path, model) {
-    return path.split('.').reduce(getProperty, model);
+
+    return path.split('.')
+        .reduce(getProperty, model);
     function getProperty(acc, property) {
         let result;
         if (arrayPattern.test(property)) {
