@@ -1,4 +1,3 @@
-const Handlebars = require('Handlebars');
 const d3 = require('d3');
 const arrayPattern = /^(\w+)\[(\d+)]$/;
 
@@ -83,7 +82,7 @@ DropdownWidget.prototype.populateDropdown = function() {
     var template = null;
 
     if (hasDisplayTemplate()) {
-        template = Handlebars.compile(display.items.template);
+        template = this.widget.templateEngine.compile(display.items.template);
     }
 
 
@@ -115,7 +114,7 @@ DropdownWidget.prototype.populateDropdown = function() {
         let currentTemplate = template;
         let currentModel = d;
         if (!template) {
-            currentTemplate = Handlebars.compile(d);
+            currentTemplate = scope.templateEngine.compile(d);
             currentModel = model;
         }
         return currentTemplate({
@@ -134,11 +133,11 @@ DropdownWidget.prototype.getTitle = function() {
 
     if (this.isFilled()) {
         title = this.view.querySelector('span').textContent;
-        let template = Handlebars.compile(title);
+        let template = this.scope.templateEngine.compile(title);
         title = template(this);
     } else if(this.display.title) {
         let text = this.display.title;
-        let template = Handlebars.compile(text);
+        let template = this.scope.templateEngine.compile(text);
         title = template(this);
     }
 
