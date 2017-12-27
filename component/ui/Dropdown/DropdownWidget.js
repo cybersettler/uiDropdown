@@ -82,7 +82,7 @@ DropdownWidget.prototype.populateDropdown = function() {
     var template = null;
 
     if (hasDisplayTemplate()) {
-        template = this.widget.templateEngine.compile(display.items.template);
+        template = scope.templateEngine.compile(display.items.template);
     }
 
 
