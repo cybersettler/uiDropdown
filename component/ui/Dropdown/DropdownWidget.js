@@ -113,8 +113,15 @@ DropdownWidget.prototype.populateDropdown = function() {
 
         let currentTemplate = template;
         let currentModel = d;
-        if (!template) {
+        if (!template && typeof d === 'object' && d.template) {
+            currentTemplate = scope.templateEngine.compile(d.template);
+        } else if (!template) {
             currentTemplate = scope.templateEngine.compile(d);
+            currentModel = model;
+        }
+        if (typeof d === 'object' && d.model) {
+            currentModel = d.model;
+        } else if (typeof d === 'object') {
             currentModel = model;
         }
         return currentTemplate({
