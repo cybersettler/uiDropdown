@@ -15,6 +15,7 @@ function DropdownWidget(view, scope) {
         button.setAttribute("aria-expanded", isOpened.toString());
     });
 
+    this.dropdown = dropdown;
     this.button = button;
 }
 
@@ -26,6 +27,11 @@ DropdownWidget.prototype.render = function() {
                 widget.renderButton();
                 widget.populateDropdown();
             });
+};
+
+DropdownWidget.prototype.collapse = function() {
+    var isOpened = this.dropdown.classList.toggle('open');
+    this.button.setAttribute("aria-expanded", isOpened.toString());
 };
 
 DropdownWidget.prototype.renderButton = function() {
@@ -74,6 +80,7 @@ DropdownWidget.prototype.isFilled = function() {
 
 DropdownWidget.prototype.populateDropdown = function() {
 
+    var widget = this;
     var data = this.getOptionsData();
     var options = this.view.shadowRoot.querySelector('ul.dropdown-menu');
     var model = this.model;
@@ -103,6 +110,7 @@ DropdownWidget.prototype.populateDropdown = function() {
             if (scope.onSelect) {
                 scope.onSelect(d);
             }
+            widget.collapse();
         })
         .text(renderTemplate);
 
