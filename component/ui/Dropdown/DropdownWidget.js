@@ -5,18 +5,28 @@ function DropdownWidget(view, scope) {
 
     this.view = view;
     this.scope = scope;
-    this.display = {};
+    let title = view.querySelector('.dropdown-title');
+    let menu = view.querySelector('.dropdown-menu');
+    let dropdown = view.shadowRoot.querySelector('.dropdown');
+    let button = view.shadowRoot.querySelector('.dropdown>button');
 
-    var dropdown = view.shadowRoot.querySelector('.dropdown');
-    var button = view.shadowRoot.querySelector('.dropdown>button');
+    if (title) {
+        this.renderTitleTemplate = scope.templateEngine.compile(title.innerHTML);
+    }
 
-    button.addEventListener('click', function() {
-        var isOpened = dropdown.classList.toggle('open');
-        button.setAttribute("aria-expanded", isOpened.toString());
-    });
+    if (menu) {
+        this.renderMenuTemplate = scope.templateEngine.compile(menu.innerHTML);
+    }
 
+    this.title = title;
+    this.menu = menu;
     this.dropdown = dropdown;
     this.button = button;
+
+    button.addEventListener('click', function() {
+        let isOpened = dropdown.classList.toggle('open');
+        button.setAttribute("aria-expanded", isOpened.toString());
+    });
 }
 
 DropdownWidget.prototype.render = function() {
@@ -24,26 +34,8 @@ DropdownWidget.prototype.render = function() {
     return this.fetchData()
         .then(
             function(widget) {
-                widget.renderButton();
-                widget.populateDropdown();
+                render(widget);
             });
-};
-
-DropdownWidget.prototype.collapse = function() {
-    var isOpened = this.dropdown.classList.toggle('open');
-    this.button.setAttribute("aria-expanded", isOpened.toString());
-};
-
-DropdownWidget.prototype.renderButton = function() {
-    var caret = document.createElement('span');
-    caret.classList.add('caret');
-    this.button.textContent = this.getTitle();
-    this.button.appendChild(caret);
-    if (this.view.classList.contains('nav')) {
-        this.button.classList.add('btn-link');
-    } else {
-        this.button.classList.add('btn-default');
-    }
 };
 
 DropdownWidget.prototype.fetchData = function() {
@@ -74,119 +66,143 @@ DropdownWidget.prototype.fetchData = function() {
     });
 };
 
-DropdownWidget.prototype.isFilled = function() {
-    return !!this.view.innerHTML;
+DropdownWidget.prototype.collapse = function() {
+    var isOpened = this.dropdown.classList.toggle('open');
+    this.button.setAttribute("aria-expanded", isOpened.toString());
 };
 
-DropdownWidget.prototype.populateDropdown = function() {
-
-    var widget = this;
-    var data = this.getOptionsData();
-    var options = this.view.shadowRoot.querySelector('ul.dropdown-menu');
-    var model = this.model;
-    var display = this.display;
-    var scope = this.scope;
-    var template = null;
-
-    if (hasDisplayTemplate()) {
-        template = scope.templateEngine.compile(display.items.template);
+function render(widget) {
+    if (widget.display) {
+        renderDropdownFromDisplay(widget);
+    } else {
+        widget.title.innerHTML = widget.renderTitleTemplate(
+            {model: widget.model});
+        widget.menu.innerHTML = widget.renderMenuTemplate(
+            {model: widget.model});
     }
 
+    initializeLinks(widget);
+}
+
+function renderDropdownFromDisplay(widget) {
+    renderTitleFromDisplay(widget);
+    renderMenuFromTemplate(widget);
+}
+
+function renderTitleFromDisplay(widget) {
+    if (!widget.title) {
+        let titleDiv = document.createElement('div');
+        titleDiv.classList.add('dropdown-title');
+        widget.view.appendChild(titleDiv);
+        widget.title = titleDiv;
+    }
+    widget.title.innerHTML = widget.scope.templateEngine.render(
+        widget.display.title, {model: widget.model});
+}
+
+function renderMenuFromTemplate(widget) {
+    let data = getMenuData(widget);
+
+    if (!widget.menu) {
+        let menuDiv = document.createElement('div');
+        menuDiv.classList.add('dropdown-menu');
+        let ul = document.createElement('ul');
+        menuDiv.appendChild(ul);
+        widget.view.appendChild(menuDiv);
+        widget.menu = ul;
+    }
 
     // Update…
-    var li = d3.select(options)
+    var li = d3.select(widget.menu)
         .selectAll('li')
         .data(data);
 
     li.select('a')
-        .text(renderTemplate);
+        .text(renderLinkTemplate);
 
     // Enter…
     li.enter()
         .append('li')
         .append('a')
-        .on('click', function(d) {
-            d3.event.preventDefault();
-            if (scope.onSelect) {
-                scope.onSelect(d);
-            }
-            widget.collapse();
-        })
-        .text(renderTemplate);
+        .text(renderLinkTemplate);
 
     // Exit…
     li.exit().remove();
 
-    function renderTemplate(d) {
+    function renderLinkTemplate(d) {
+        return widget.scope.templateEngine.render(d.template, {model: d.model})
+    }
 
-        let currentTemplate = template;
-        let currentModel = d;
-        if (!template && typeof d === 'object' && d.template) {
-            currentTemplate = scope.templateEngine.compile(d.template);
-        } else if (!template) {
-            currentTemplate = scope.templateEngine.compile(d);
-            currentModel = model;
+}
+
+function initializeLinks(widget) {
+    Array.from(widget.menu.querySelectorAll('a'))
+        .forEach(initializeLink, widget);
+}
+
+function initializeLink(link) {
+    var widget = this;
+    link.addEventListener('click', onSelect);
+
+    function onSelect(e) {
+        e.preventDefault();
+        if (widget.scope.onSelect) {
+            widget.scope.onSelect(d);
         }
-        if (typeof d === 'object' && d.model) {
-            currentModel = d.model;
-        } else if (typeof d === 'object') {
-            currentModel = model;
-        }
-        return currentTemplate({
-            model: currentModel
+        widget.collapse();
+    }
+}
+
+ function getMenuData(widget) {
+
+    var menu = widget.display.menu;
+    var result = [];
+
+    if (Array.isArray(menu)) {
+        return menu.map(function(item) {
+            let result = item;
+            if (typeof item === 'string') {
+                result = {
+                    model: widget.model,
+                    template: item
+                }
+            } else {
+                result.model = getItemModel(item.model, widget.model)
+            }
+
+            return result;
+        });
+    } else if(Array.isArray(widget.model)) {
+        console.log('model is an array', widget.model);
+        result = widget.model.map(function(item) {
+            let model = getItemModel(menu.model, item);
+            return {
+                model: model,
+                template: menu.template
+            }
+        });
+    } else {
+        let model = getItemModel(menu.model, widget.model);
+        result = model.map(function(item) {
+            return {
+                model: item,
+                template: menu.template
+            };
         });
     }
 
-    function hasDisplayTemplate() {
-        return display.items && !Array.isArray(display.items) && display.items.template;
+    return result;
+}
+
+function getItemModel(path, model) {
+
+    if (!path) {
+        return model;
     }
-};
-
-DropdownWidget.prototype.getTitle = function() {
-
-    var title = '';
-
-    if (this.isFilled()) {
-        title = this.view.querySelector('span').textContent;
-        let template = this.scope.templateEngine.compile(title);
-        title = template(this);
-    } else if(this.display.title) {
-        let text = this.display.title;
-        let template = this.scope.templateEngine.compile(text);
-        title = template(this);
-    }
-
-    return title;
-};
-
-DropdownWidget.prototype.getOptionsData = function() {
-
-    var data = [];
-    var items = this.display.items;
-    var model = this.model;
-
-    if (this.isFilled()) {
-        let lis = this.view.querySelectorAll('li');
-        data = Array.from(lis)
-            .map(function(item){
-                return item.textContent;
-            });
-    } else if (items && Array.isArray(items)) {
-        data = items;
-    } else if (model && Array.isArray(model)) {
-        data = model;
-    } else if (typeof model === 'object' &&
-        typeof items === 'object') {
-        data = getItemsModel(items.model, model);
-    }
-
-    return data;
-};
-
-function getItemsModel(path, model) {
 
     return path.split('.')
         .reduce(getProperty, model);
+
     function getProperty(acc, property) {
         let result;
         if (arrayPattern.test(property)) {

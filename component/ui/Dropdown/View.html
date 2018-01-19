@@ -1,11 +1,12 @@
 <template class="shadow">
     <style><%- shadowStyle %></style>
     <div class="dropdown">
-        <button class="btn" type="button" data-toggle="dropdown"
+        <button class="btn btn-link" type="button" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
-            {{display.title}}
+            <content select=".dropdown-title"></content>
         </button>
-        <ul class="dropdown-menu" aria-labelledby="dLabel"></ul>
+        <content select=".dropdown-menu"></content>
+        <!-- <ul class="dropdown-menu" aria-labelledby="dLabel"></ul> -->
     </div>
 </template>
 

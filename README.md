@@ -19,14 +19,31 @@ In your project's bower.json:
 
 ```html
 <ui-dropdown>
-    <span>{{i18n mymenu.title}}</span>
-    <ul>
-        <li>{{i18n mymenu.option1}}</li>
-        <li>{{i18n mymenu.option2}}</li>
-        <li>{{i18n mymenu.option3}}</li>
-    </ul>
+    <div class="dropdown-title">
+        {{i18n 'mymenu.title'}}
+    </div>
+    <div class="dropdown-menu">
+        <ul>
+            <li>
+                <a>{{i18n 'mymenu.option1'}}</a>
+            </li>
+            <li>
+                <a>{{i18n 'mymenu.option2'}}</a>
+            </li>
+            <li>
+                <a>{{i18n 'mymenu.option3'}}</a>
+            </li>
+        </ul>
+    </div>
 </ui-dropdown>
 ```
+
+The menu may be built from the element's content
+or from the display attribute. The display can in
+turn be an array or an object. If the display is
+an object and the model is an array, the menu
+items number and order will be taken from the model,
+otherwise they will be taken from the display.
 
 ## API
 
@@ -44,7 +61,7 @@ defaults to _down_.
 * __title__(string): Dropdown title.
 * __direction__(enum: up | down): Dropdown direction,
 defaults to _up_.
-* __items__(array: [sring] | [object] | object): Dropdown options.
+* __menu__(array: [sring] | [object] | object): Dropdown options.
 The following attributes are supported in the items configuration
 object:
   * __model__(string): Where the items come from in the model.

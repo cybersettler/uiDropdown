@@ -78,7 +78,7 @@ describe('DropdownWidget', function () {
             givenModel();
             givenDisplay({
                 title: '{{model.firstname}}',
-                items: [
+                menu: [
                     "{{i18n 'user.profile'}}",
                     "{{i18n 'system.option.settings'}}",
                     "{{i18n 'login.option.logout'}}"
@@ -94,11 +94,11 @@ describe('DropdownWidget', function () {
             var widget = new DropdownWidget(view, scope);
             widget.render()
                 .then(function () {
-                    let dropdown = view.shadowRoot.querySelector('.dropdown');
-                    let button = dropdown.querySelector('button');
+                    let dropdown = view.querySelector('.dropdown-menu');
+                    let title = view.querySelector('.dropdown-title');
                     let items = dropdown.querySelectorAll('ul>li');
                     expect(items.length).to.equal(3);
-                    expect(button.textContent).to.equal('Bruce');
+                    expect(title.textContent).to.equal('Bruce');
                     expect(items[0].textContent).to.equal('Profile');
                     expect(items[1].textContent).to.equal('Settings');
                     expect(items[2].textContent).to.equal('Log out');
@@ -110,7 +110,7 @@ describe('DropdownWidget', function () {
             givenModel();
             givenDisplay({
                 title: '{{model.firstname}}',
-                items: {
+                menu: {
                     model: 'roles[1].privileges',
                     template: '{{i18n model}}'
                 }
@@ -125,11 +125,11 @@ describe('DropdownWidget', function () {
             var widget = new DropdownWidget(view, scope);
             widget.render()
                 .then(function () {
-                    let dropdown = view.shadowRoot.querySelector('.dropdown');
-                    let button = dropdown.querySelector('button');
+                    let dropdown = view.querySelector('.dropdown-menu');
+                    let title = view.querySelector('.dropdown-title');
                     let items = dropdown.querySelectorAll('ul>li');
                     expect(items.length).to.equal(2);
-                    expect(button.textContent).to.equal('Bruce');
+                    expect(title.textContent).to.equal('Bruce');
                     expect(items[0].textContent).to.equal('Profile');
                     expect(items[1].textContent).to.equal('Settings');
                     done();
@@ -145,11 +145,11 @@ describe('DropdownWidget', function () {
             var widget = new DropdownWidget(view, scope);
             widget.render()
                 .then(function () {
-                    let dropdown = view.shadowRoot.querySelector('.dropdown');
-                    let button = dropdown.querySelector('button');
+                    let dropdown = view.querySelector('.dropdown-menu');
+                    let title = view.querySelector('.dropdown-title');
                     let items = dropdown.querySelectorAll('ul>li');
                     expect(items.length).to.equal(3);
-                    expect(button.textContent).to.equal('Bruce');
+                    expect(title.textContent).to.equal('Bruce');
                     expect(items[0].textContent).to.equal('Profile');
                     expect(items[1].textContent).to.equal('Settings');
                     expect(items[2].textContent).to.equal('Log out');
@@ -201,21 +201,30 @@ function givenEmptyView() {
 function givenLoggedInUserTemplateView() {
 
     givenEmptyView();
-    var span = document.createElement('span');
-    span.textContent = '{{model.firstname}}';
+    var titleDiv = document.createElement('div');
+    titleDiv.classList.add('dropdown-title');
+    titleDiv.textContent = '{{model.firstname}}';
     var ul = document.createElement('ul');
-    var item1 = document.createElement('li');
-    item1.textContent = "{{i18n 'user.profile'}}";
-    var item2 = document.createElement('li');
-    item2.textContent = "{{i18n 'system.option.settings'}}";
-    var item3 = document.createElement('li');
-    item3.textContent = "{{i18n 'login.option.logout'}}";
+    [
+        "{{i18n 'user.profile'}}",
+        "{{i18n 'system.option.settings'}}",
+        "{{i18n 'login.option.logout'}}"
+    ].map(function(template) {
+        let li = document.createElement('li');
+        let a = document.createElement('a');
+        a.textContent = template;
+        li.appendChild(a);
+        return li;
+    }).forEach(function (li) {
+        ul.appendChild(li);
+    });
 
-    ul.appendChild(item1);
-    ul.appendChild(item2);
-    ul.appendChild(item3);
-    view.appendChild(span);
-    view.appendChild(ul);
+    var menuDiv = document.createElement('div');
+    menuDiv.classList.add('dropdown-menu');
+    menuDiv.appendChild(ul);
+
+    view.appendChild(titleDiv);
+    view.appendChild(menuDiv);
 }
 
 function createShadowRoot() {
