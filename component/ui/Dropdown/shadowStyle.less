@@ -33,25 +33,27 @@
 }
 
 // The dropdown menu (ul)
-.dropdown-menu {
+content[select=".dropdown-menu"]::content .dropdown-menu {
   position: absolute;
   top: 100%;
   left: 0;
   z-index: @zindex-dropdown;
   display: none; // none by default, but block on "open" of the menu
   float: left;
-  min-width: 160px;
-  padding: 5px 0;
-  margin: 2px 0 0; // override default ul
-  list-style: none;
-  font-size: @font-size-base;
-  text-align: left; // Ensures proper alignment if parent has it changed (e.g., modal footer)
-  background-color: @dropdown-bg;
-  border: 1px solid @dropdown-fallback-border; // IE8 fallback
-  border: 1px solid @dropdown-border;
-  border-radius: @border-radius-base;
-  .box-shadow(0 6px 12px rgba(0,0,0,.175));
-  background-clip: padding-box;
+  ul {
+    min-width: 160px;
+    padding: 5px 0;
+    margin: 2px 0 0; // override default ul
+    list-style: none;
+    font-size: @font-size-base;
+    text-align: left; // Ensures proper alignment if parent has it changed (e.g., modal footer)
+    background-color: @dropdown-bg;
+    border: 1px solid @dropdown-fallback-border; // IE8 fallback
+    border: 1px solid @dropdown-border;
+    border-radius: @border-radius-base;
+    .box-shadow(0 6px 12px rgba(0, 0, 0, .175));
+    background-clip: padding-box;
+  }
 
   // Aligns the dropdown menu to right
   //
@@ -67,7 +69,7 @@
   }
 
   // Links within the dropdown menu
-  > li > a {
+  ul > li > a {
     display: block;
     padding: 3px 20px;
     clear: both;
@@ -79,7 +81,7 @@
 }
 
 // Hover/Focus state
-.dropdown-menu > li > a {
+content[select=".dropdown-menu"]::content .dropdown-menu ul > li > a {
   &:hover,
   &:focus {
     text-decoration: none;
@@ -89,7 +91,7 @@
 }
 
 // Active state
-.dropdown-menu > .active > a {
+content[select=".dropdown-menu"]::content .dropdown-menu ul > .active > a {
   &,
   &:hover,
   &:focus {
@@ -104,7 +106,7 @@
 //
 // Gray out text and ensure the hover/focus state remains gray
 
-.dropdown-menu > .disabled > a {
+content[select=".dropdown-menu"]::content .dropdown-menu ul > .disabled > a {
   &,
   &:hover,
   &:focus {
@@ -125,7 +127,7 @@
 // Open state for the dropdown
 .open {
   // Show the menu
-  > .dropdown-menu {
+  content[select=".dropdown-menu"]::content .dropdown-menu {
     display: block;
   }
 
@@ -209,7 +211,7 @@
 
 @media (min-width: @grid-float-breakpoint) {
   :host(.nav) {
-    .dropdown-menu {
+    content[select=".dropdown-menu"]::content .dropdown-menu {
       .dropdown-menu-right();
     }
     // Necessary for overrides of the default right aligned menu.
@@ -254,26 +256,30 @@
     }
   }
 
-  .dropdown-menu {
+  content[select=".dropdown-menu"]::content .dropdown-menu ul {
     margin-top: 0;
     .border-top-radius(0);
   }
 
   @media (max-width: @grid-float-breakpoint-max) {
     // Dropdowns get custom display when collapsed
-    .open .dropdown-menu {
+    .open content[select=".dropdown-menu"]::content .dropdown-menu {
       position: static;
       float: none;
-      width: auto;
-      margin-top: 0;
-      background-color: transparent;
-      border: 0;
-      box-shadow: none;
-      > li > a,
+
+      ul {
+        width: auto;
+        margin-top: 0;
+        background-color: transparent;
+        border: 0;
+        box-shadow: none;
+      }
+
+      ul > li > a,
       .dropdown-header {
         padding: 5px 15px 5px 25px;
       }
-      > li > a {
+      ul > li > a {
         line-height: @line-height-computed;
         &:hover,
         &:focus {
