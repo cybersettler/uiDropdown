@@ -67,6 +67,8 @@ object:
   * __model__(string): Where the items come from in the model.
   * __template__(string): A _Handlebars_ template that will be used
   to render the dropdown items.
+  * __href__(string): Hyperlink reference that the
+  menu item points to.
 
 ### data-select
 

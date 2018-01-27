@@ -5,17 +5,19 @@
 @import 'variables.less';
 
 // Utilities
-@import "mixins/opacity.less";
 @import "mixins/reset-filter.less";
-@import "mixins/tab-focus.less";
 @import "mixins/vendor-prefixes.less";
 
 // Skins
 @import "mixins/border-radius.less";
 
 @import 'mixins/nav-divider.less';
-@import 'buttons.less';
-@import 'mixins/buttons.less';
+
+:host {
+  position: relative;
+  display: block;
+  padding: @nav-link-padding;
+}
 
 // Dropdown arrow/caret
 .caret {
@@ -28,12 +30,6 @@
   border-top:   @caret-width-base solid ~"\9"; // IE8
   border-right: @caret-width-base solid transparent;
   border-left:  @caret-width-base solid transparent;
-}
-
-// The dropdown wrapper (div)
-.dropup,
-.dropdown {
-  position: relative;
 }
 
 // Prevent the focus on the dropdown toggle when closing dropdowns
@@ -66,6 +62,9 @@ content[select=".dropdown-menu"]::content .dropdown-menu {
     border-radius: @border-radius-base;
     .box-shadow(0 6px 12px rgba(0, 0, 0, .175));
     background-clip: padding-box;
+    & > li {
+      float: none;
+    }
   }
 
   // Aligns the dropdown menu to right
@@ -170,7 +169,7 @@ content[select=".dropdown-menu"]::content .dropdown-menu ul > .disabled > a {
 }
 
 // Dropdown section headers
-.dropdown-header {
+content[select=".dropdown-menu"]::content .dropdown-menu .dropdown-header {
   display: block;
   padding: 3px 20px;
   font-size: @font-size-small;
@@ -223,7 +222,7 @@ content[select=".dropdown-menu"]::content .dropdown-menu ul > .disabled > a {
 // Reiterate per navbar.less and the modified component alignment there.
 
 @media (min-width: @grid-float-breakpoint) {
-  :host(.nav) {
+  :host-context(.navbar-right) {
     content[select=".dropdown-menu"]::content .dropdown-menu {
       .dropdown-menu-right();
     }
@@ -235,44 +234,47 @@ content[select=".dropdown-menu"]::content .dropdown-menu ul > .disabled > a {
   }
 }
 
-:host(.nav) {
+// _______________________________________/ END DROPDOWN OWN STYLE
 
-  button.btn-link {
-    padding-top:    10px;
-    padding-bottom: 10px;
-    line-height: @line-height-computed;
-    color: @navbar-default-link-color;
-    border: none;
+// From the navs.less
 
-    &:hover,
-    &:focus {
-      color: @navbar-default-link-hover-color;
-      background-color: @navbar-default-link-hover-bg;
-      border: none;
-      outline: none;
-      text-decoration: none;
-    }
+a.dropdown-toggle {
+  text-decoration: none; //
 
-    // Remove background color from open dropdown
-    &[aria-expanded=true] {
-      &,
-      &:hover,
-      &:focus {
-        background-color: @navbar-default-link-active-bg;
-        color: @navbar-default-link-active-color;
-      }
-    }
-
-    @media (min-width: @grid-float-breakpoint) {
-      padding-top:    @navbar-padding-vertical;
-      padding-bottom: @navbar-padding-vertical;
-    }
+  &:hover,
+  &:focus {
+    text-decoration: none;
+    background-color: @nav-link-hover-bg;
   }
+}
 
-  content[select=".dropdown-menu"]::content .dropdown-menu ul {
-    margin-top: 0;
-    .border-top-radius(0);
+:host-context(.disabled)  a.dropdown-toggle {
+  color: @nav-disabled-link-color;
+
+  &:hover,
+  &:focus {
+    color: @nav-disabled-link-hover-color;
+    text-decoration: none;
+    background-color: transparent;
+    cursor: @cursor-disabled;
   }
+}
+
+// Open dropdowns
+.open > a {
+  &,
+  &:hover,
+  &:focus {
+    background-color: @nav-link-hover-bg;
+    border-color: @link-color;
+  }
+}
+
+// _____________________________________/ END NAVS.LESS style
+
+// NAVBAR style
+
+:host-context(.navbar-nav) {
 
   @media (max-width: @grid-float-breakpoint-max) {
     // Dropdowns get custom display when collapsed
@@ -302,3 +304,154 @@ content[select=".dropdown-menu"]::content .dropdown-menu ul > .disabled > a {
     }
   }
 }
+
+:host-context(.navbar-nav) content[select=".dropdown-menu"]::content .dropdown-menu ul {
+  margin-top: 0;
+  .border-top-radius(0);
+}
+
+// Menu position and menu caret support for dropups via extra dropup class
+:host-context(.navbar-fixed-bottom) content[select=".dropdown-menu"]::content .dropdown-menu ul {
+  margin-bottom: 0;
+  .border-top-radius(@navbar-border-radius);
+  .border-bottom-radius(0);
+}
+
+// Default Navbar
+
+:host-context(.navbar-default) {
+  // Dropdown menu items
+
+    a.dropdown-toggle {
+      // cursor: pointer;
+      color: @navbar-default-link-color;
+
+      &:hover,
+      &:focus {
+        color: @navbar-default-link-hover-color;
+        background-color: @navbar-default-link-hover-bg;
+      }
+    }
+
+    // Remove background color from open dropdown
+    .open > a {
+      &,
+      &:hover,
+      &:focus {
+        background-color: @navbar-default-link-active-bg;
+        color: @navbar-default-link-active-color;
+      }
+    }
+
+    @media (max-width: @grid-float-breakpoint-max) {
+      // Dropdowns get custom display when collapsed
+      .open content[select=".dropdown-menu"]::content .dropdown-menu {
+        ul > li > a {
+          color: @navbar-default-link-color;
+          &:hover,
+          &:focus {
+            color: @navbar-default-link-hover-color;
+            background-color: @navbar-default-link-hover-bg;
+          }
+        }
+        ul > .active > a {
+          &,
+          &:hover,
+          &:focus {
+            color: @navbar-default-link-active-color;
+            background-color: @navbar-default-link-active-bg;
+          }
+        }
+        ul > .disabled > a {
+          &,
+          &:hover,
+          &:focus {
+            color: @navbar-default-link-disabled-color;
+            background-color: @navbar-default-link-disabled-bg;
+          }
+        }
+      }
+    }
+}
+
+:host-context(.navbar-default .active) {
+  a.dropdown-toggle {
+    &,
+    &:hover,
+    &:focus {
+      color: @navbar-default-link-active-color;
+      background-color: @navbar-default-link-active-bg;
+    }
+  }
+}
+
+:host-context(.navbar-default .disabled) {
+  a.dropdown-toggle {
+    &,
+    &:hover,
+    &:focus {
+      color: @navbar-default-link-disabled-color;
+      background-color: @navbar-default-link-disabled-bg;
+    }
+  }
+}
+
+// Inverse navbar
+:host-context(.navbar-inverse) :host(.nav) {
+  .open > a {
+    &,
+    &:hover,
+    &:focus {
+      background-color: @navbar-inverse-link-active-bg;
+      color: @navbar-inverse-link-active-color;
+    }
+
+    // Remove background color from open dropdown
+    &[aria-expanded=true] {
+      &,
+      &:hover,
+      &:focus {
+        background-color: @navbar-inverse-link-active-bg;
+        color: @navbar-inverse-link-active-color;
+      }
+    }
+  }
+
+  @media (max-width: @grid-float-breakpoint-max) {
+    // Dropdowns get custom display
+    .open content[select=".dropdown-menu"]::content .dropdown-menu {
+      ul > .dropdown-header {
+        border-color: @navbar-inverse-border;
+      }
+      .divider {
+        background-color: @navbar-inverse-border;
+      }
+      ul > li > a {
+        color: @navbar-inverse-link-color;
+        &:hover,
+        &:focus {
+          color: @navbar-inverse-link-hover-color;
+          background-color: @navbar-inverse-link-hover-bg;
+        }
+      }
+      ul > .active > a {
+        &,
+        &:hover,
+        &:focus {
+          color: @navbar-inverse-link-active-color;
+          background-color: @navbar-inverse-link-active-bg;
+        }
+      }
+      ul > .disabled > a {
+        &,
+        &:hover,
+        &:focus {
+          color: @navbar-inverse-link-disabled-color;
+          background-color: @navbar-inverse-link-disabled-bg;
+        }
+      }
+    }
+  }
+}
+
+// ________________________________________/ END OF NAVBAR style

@@ -8,7 +8,7 @@ function DropdownWidget(view, scope) {
     let title = view.querySelector('.dropdown-title');
     let menu = view.querySelector('.dropdown-menu');
     let dropdown = view.shadowRoot.querySelector('.dropdown');
-    let button = view.shadowRoot.querySelector('.dropdown>button');
+    let button = view.shadowRoot.querySelector('.dropdown>a');
 
     if (title) {
         this.renderTitleTemplate = scope.templateEngine.compile(title.innerHTML);
@@ -23,9 +23,11 @@ function DropdownWidget(view, scope) {
     this.dropdown = dropdown;
     this.button = button;
 
-    button.addEventListener('click', function() {
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
         let isOpened = dropdown.classList.toggle('open');
         button.setAttribute("aria-expanded", isOpened.toString());
+        view.classList.toggle('open');
     });
 }
 
@@ -69,6 +71,7 @@ DropdownWidget.prototype.fetchData = function() {
 DropdownWidget.prototype.collapse = function() {
     var isOpened = this.dropdown.classList.toggle('open');
     this.button.setAttribute("aria-expanded", isOpened.toString());
+    this.view.classList.toggle('open');
 };
 
 function render(widget) {
@@ -86,7 +89,7 @@ function render(widget) {
 
 function renderDropdownFromDisplay(widget) {
     renderTitleFromDisplay(widget);
-    renderMenuFromTemplate(widget);
+    renderMenuFromDisplay(widget);
 }
 
 function renderTitleFromDisplay(widget) {
@@ -100,7 +103,7 @@ function renderTitleFromDisplay(widget) {
         widget.display.title, {model: widget.model});
 }
 
-function renderMenuFromTemplate(widget) {
+function renderMenuFromDisplay(widget) {
     let data = getMenuData(widget);
 
     if (!widget.menu) {
@@ -124,6 +127,9 @@ function renderMenuFromTemplate(widget) {
     li.enter()
         .append('li')
         .append('a')
+        .attr('href', function(d) {
+            return d.href;
+        })
         .text(renderLinkTemplate);
 
     // Exit…
@@ -146,8 +152,9 @@ function initializeLink(link) {
 
     function onSelect(e) {
         e.preventDefault();
+        let href = e.currentTarget.getAttribute('href');
         if (widget.scope.onSelect) {
-            widget.scope.onSelect(d);
+            widget.scope.onSelect({href: href});
         }
         widget.collapse();
     }
